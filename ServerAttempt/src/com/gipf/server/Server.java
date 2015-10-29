@@ -5,10 +5,6 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 
 import com.gipf.server.logic.LogicController;
-import com.gipf.server.logic.board.Board;
-import com.gipf.server.logic.player.Player;
-import com.gipf.server.logic.player.PlayerEvent;
-import com.gipf.server.logic.utils.Point;
 
 public class Server {
 
@@ -39,6 +35,7 @@ public class Server {
 			this.console.append("All clients connected!");
 			
 			this.controller = new LogicController(this);
+			this.controller.sendClientInit();
 		} catch (IOException e) {
 			this.console.append("Server start has failed");
 			e.printStackTrace();
@@ -75,7 +72,7 @@ public class Server {
 		}
 	}
 	
-	public synchronized void sentToClient(String send, int index) {
+	public synchronized void sendToClient(String send, int index) {
 		this.clients.get(index).send(send);
 	}
 	
@@ -95,8 +92,8 @@ public class Server {
 		int port = 3620;
 
 		Server server = new Server(port);
-//		server.start();
-		PlayerEvent e = new PlayerEvent(new Point(0,0), new Point(1,1), new Player(Board.BLACK_VALUE));
-		server.clientInput(e.toString(), 2);
+		server.start();
+//		PlayerEvent e = new PlayerEvent(new Point(0,0), new Point(1,1), new Player(Board.BLACK_VALUE));
+//		server.clientInput(e.toString(), 2);
 	}
 }

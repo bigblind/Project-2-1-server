@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import com.gipf.server.logic.Game;
 import com.gipf.server.logic.LogicController;
+import com.gipf.server.logic.PlayerChangeEvent;
 import com.gipf.server.logic.Row;
+import com.gipf.server.logic.RowRemovalRequestEvent;
 import com.gipf.server.logic.board.Board;
 import com.gipf.server.logic.player.Player;
 import com.gipf.server.logic.player.PlayerEvent;
@@ -12,21 +14,16 @@ import com.gipf.server.logic.utils.Point;
 
 public abstract class GameLogic {
 
-	private LogicController controller;
+	protected LogicController controller;
 	
 	protected Game game;
 	protected Player currentPlayer;
 	protected ArrayList<Row> removeOptions = new ArrayList<Row>();
 	protected RowRemovalRequestEvent rowRemovalEvent;
-	private ArrayList<PlayerChangeListener> listeners;
-	private ArrayList<RowRemovalRequestListener> rrrListeners;
 
 	public GameLogic(Game game, LogicController controller) {
 		this.controller = controller;
 		this.game = game;
-		
-		this.listeners = new ArrayList<PlayerChangeListener>();
-		this.rrrListeners = new ArrayList<RowRemovalRequestListener>();
 	}
 	
 	public abstract void playerEventPerformed(PlayerEvent e);
@@ -46,7 +43,7 @@ public abstract class GameLogic {
 			}
 		}
 		this.rowRemovalEvent = null;
-		this.server.sendGameUpdate();
+		this.controller.sendGameUpdate();
 		if (!this.handleRows()) {
 			moveToNextPlayer();
 		}
@@ -86,17 +83,13 @@ public abstract class GameLogic {
 			row.getPlayer().setStoneAccount(row.getPlayer().getStoneAccount() + stones);
 
 		} else if (rows.size() > 0) {
-			this.server.sendGameUpdate();
+			this.controller.sendGameUpdate();
 			ArrayList<Row> activeRows = rowsForPlayer(this.currentPlayer.getStoneColor(), rows);
 			if (activeRows.size() > 0) {
-				emitRowRemovalRequest(new RowRemovalRequestEvent(activeRows));
+				this.controller.rowRemoveRequestEventPerformed(new RowRemovalRequestEvent(activeRows));
 				return true;
 			} else {
-				ArrayList<Row> notActiveRows;
-				if (currentPlayer.getStoneColor() == Board.WHITE_VALUE) notActiveRows = rowsForPlayer(Board.BLACK_VALUE, rows);
-				else notActiveRows = rowsForPlayer(Board.WHITE_VALUE, rows);
-
-				emitRowRemovalRequest(new RowRemovalRequestEvent(notActiveRows));
+				this.controller.rowRemoveRequestEventPerformed(new RowRemovalRequestEvent(activeRows));
 				return true;
 			}
 		}
@@ -135,12 +128,12 @@ public abstract class GameLogic {
 	}
 
 	protected void moveToNextPlayer() {
-		if (currentPlayer == game.getPlayerOne()) {
-			currentPlayer = game.getPlayerTwo();
-			this.notifyListeners(new PlayerChangeEvent(game.getPlayerOne(), game.getPlayerTwo()));
+		if (this.currentPlayer == game.getPlayerOne()) {
+			this.currentPlayer = game.getPlayerTwo();
+			this.controller.changeEventPerformed(new PlayerChangeEvent(game.getPlayerOne(), game.getPlayerTwo()));
 		} else {
-			currentPlayer = game.getPlayerOne();
-			this.notifyListeners(new PlayerChangeEvent(game.getPlayerTwo(), game.getPlayerOne()));
+			this.currentPlayer = game.getPlayerOne();
+			this.controller.changeEventPerformed(new PlayerChangeEvent(game.getPlayerTwo(), game.getPlayerOne()));
 		}
 	}
 

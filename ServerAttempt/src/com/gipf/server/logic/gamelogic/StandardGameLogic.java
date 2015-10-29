@@ -13,10 +13,10 @@ public class StandardGameLogic extends GameLogic {
 
 	public void playerEventPerformed(PlayerEvent e) {
 		if (!this.game.getBoard().isValidMove(e.getFromPoint(), e.getToPoint())) {
-			this.server.sendMoveValidity(false);
+			this.controller.sendMoveValidity(false);
 			return;
 		}
-		this.server.sendMoveValidity(true);
+		this.controller.sendMoveValidity(true);
 		this.game.getBoard().place(e.getPlayer().getStoneColor(), e.getFromPoint(), e.getToPoint());
 		this.getCurrentPlayer().setStoneAccount(this.getCurrentPlayer().getStoneAccount() - 1);
 
@@ -24,7 +24,7 @@ public class StandardGameLogic extends GameLogic {
 
 		this.moveToNextPlayer();
 		if (this.checkForWin()) {
-			this.server.sendWinLoseUpdate(this.returnWinner());
+			this.controller.sendWinLoseUpdate(this.returnWinner());
 		}
 	}
 
