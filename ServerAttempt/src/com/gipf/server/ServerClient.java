@@ -8,13 +8,18 @@ import java.net.Socket;
 
 public class ServerClient {
 
+	private Server server;
+	private int id;
+	
 	private BufferedReader in;
 	private PrintWriter out;
 	private Socket socket;
 	
 	private Thread receive;
 
-	public ServerClient(Socket socket) throws IOException {
+	public ServerClient(Socket socket, Server server, int id) throws IOException {
+		this.server = server;
+		this.id = id;
 		this.socket = socket;
 		this.out = new PrintWriter(socket.getOutputStream(), true);
 		this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -24,7 +29,7 @@ public class ServerClient {
 				String input;
 				try {
 					while((input = in.readLine()) != null) {
-						System.out.println(input);
+						receive(input);
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -39,7 +44,7 @@ public class ServerClient {
 	}
 	
 	public synchronized void receive(String string) {
-		this.out.println(string);
+		this.server.clientInput(string, this.id);
 	}
 
 	public Socket getSocket() {
