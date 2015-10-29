@@ -1,11 +1,5 @@
 package com.gipf.server.logic.player;
 
-import java.awt.Point;
-import java.util.ArrayList;
-
-import com.gipf.server.logic.Game;
-import com.gipf.server.logic.Row;
-
 public class Player {
 
 	private String name;

@@ -11,7 +11,7 @@ public class Server {
 	private ArrayList<ServerClient> clients;
 	private ServerConsole console;
 	private ServerSocket socket;
-	
+
 	private int port;
 
 	private LogicController controller;
@@ -21,7 +21,7 @@ public class Server {
 		this.console.setVisible(true);
 		this.clients = new ArrayList<ServerClient>();
 		this.port = port;
-		
+
 		this.controller = new LogicController(this);
 	}
 
@@ -33,7 +33,7 @@ public class Server {
 			this.console.append("Waiting for clients to connect.");
 			this.connectClients();
 			this.console.append("All clients connected!");
-			
+
 			this.controller = new LogicController(this);
 			this.controller.sendClientInit();
 		} catch (IOException e) {
@@ -66,16 +66,20 @@ public class Server {
 		}
 	}
 
+	public void disconnectClient(int id) {
+		this.clients.remove(id - 1);
+	}
+
 	public synchronized void sendToAll(String send) {
 		for (int i = 0; i < this.clients.size(); i++) {
 			this.clients.get(i).send(send);
 		}
 	}
-	
+
 	public synchronized void sendToClient(String send, int index) {
 		this.clients.get(index).send(send);
 	}
-	
+
 	public void clientInput(String text, int id) {
 		this.controller.clientInput(text, id);
 	}
@@ -87,13 +91,17 @@ public class Server {
 			sendToAll(string);
 		}
 	}
+	
+	public ServerConsole getConsole() {
+		return this.console;
+	}
 
 	public static void main(String[] args) {
 		int port = 3620;
 
 		Server server = new Server(port);
 		server.start();
-//		PlayerEvent e = new PlayerEvent(new Point(0,0), new Point(1,1), new Player(Board.BLACK_VALUE));
-//		server.clientInput(e.toString(), 2);
+		//		PlayerEvent e = new PlayerEvent(new Point(0,0), new Point(1,1), new Player(Board.BLACK_VALUE));
+		//		server.clientInput(e.toString(), 2);
 	}
 }

@@ -11,7 +11,7 @@ import com.gipf.server.logic.utils.Point;
 public class LogicController {
 
 	private Server server;
-	
+
 	private GameLogic logic;
 	private Game game;
 
@@ -24,14 +24,14 @@ public class LogicController {
 		this.logic = new BasicGameLogic(this.game, this);
 		this.logic.setCurrentPlayer(this.game.getPlayerOne());
 	}
-	
-	public void clientInput(String text, int id) {
-		if (text.contains("PlayerEvent")) {
-			int x1 = Integer.parseInt(""+text.split("x = ")[1].charAt(0));
-			int y1 = Integer.parseInt(""+text.split("y = ")[1].charAt(0));
-			int x2 = Integer.parseInt(""+text.split("x = ")[2].charAt(0));
-			int y2 = Integer.parseInt(""+text.split("y = ")[2].charAt(0));
-			
+
+	public void clientInput(String received, int id) {
+		if (received.contains("PlayerEvent")) {
+			int x1 = Integer.parseInt("" + received.split("x = ")[1].charAt(0));
+			int y1 = Integer.parseInt("" + received.split("y = ")[1].charAt(0));
+			int x2 = Integer.parseInt("" + received.split("x = ")[2].charAt(0));
+			int y2 = Integer.parseInt("" + received.split("y = ")[2].charAt(0));
+
 			if (id == 1) {
 				PlayerEvent pe = new PlayerEvent(new Point(x1, y1), new Point(x2, y2), game.getPlayerOne());
 				this.logic.playerEventPerformed(pe);
@@ -39,11 +39,36 @@ public class LogicController {
 				PlayerEvent pe = new PlayerEvent(new Point(x1, y1), new Point(x2, y2), game.getPlayerTwo());
 				this.logic.playerEventPerformed(pe);
 			}
+		} else if (received.startsWith("/removerow")) {
+			String[] subPartsX = received.split("Point: x = ");
+			String[] subPartsY = received.split("y = ");
+
+			int x1 = Integer.parseInt(subPartsX[1].substring(0, 1));
+			int y1 = Integer.parseInt(subPartsY[1].substring(0, 1));
+
+			int x2 = Integer.parseInt(subPartsX[2].substring(0, 1));
+			int y2 = Integer.parseInt(subPartsY[2].substring(0, 1));
+
+			Point start = new Point(x1, y1);
+			Point end = new Point(x2, y2);
+			this.logic.removeRowFromPoints(start, end);
+		} else if (received.startsWith("/removepoints")) {
+			String[] subPartsX = received.split("Point: x = ");
+			String[] subPartsY = received.split("y = ");
+
+			Point[] points = new Point[subPartsX.length - 1];
+
+			for (int i = 0; i < subPartsX.length - 1; i++) {
+				int x = Integer.parseInt(subPartsX[1 + i].substring(0, 1));
+				int y = Integer.parseInt(subPartsY[1 + i].substring(0, 1));
+
+				points[i] = new Point(x, y);
+			}
+
+			if (received.endsWith("checkrows")) this.logic.removePoints(points, true);
+			else this.logic.removePoints(points, false);
+			this.sendGameUpdate();
 		}
-	}
-	
-	public void logicInput(String text) {
-		
 	}
 
 	public void sendClientInit() {
@@ -60,7 +85,7 @@ public class LogicController {
 		send = "/u " + this.game.getPlayerTwo().getStoneAccount() + " " + this.game.getPlayerOne().getStoneAccount() + " " + this.game.getBoard().toString();
 		this.server.sendToClient(send, 1);
 	}
-	
+
 	public void rowRemoveRequestEventPerformed(RowRemovalRequestEvent e) {
 		String send = "/s remove";
 		for (int i = 0; i < e.getRows().size(); i++)
@@ -74,7 +99,7 @@ public class LogicController {
 			this.server.sendToClient("/s wait", 0);
 		}
 	}
-	
+
 	public void changeEventPerformed(PlayerChangeEvent e) {
 		this.sendGameUpdate();
 		if (e.getFromPlayer() == game.getPlayerOne()) {
@@ -85,7 +110,7 @@ public class LogicController {
 			this.server.sendToClient("/s move", 0);
 		}
 	}
-	
+
 	public void sendMoveValidity(boolean valid) {
 		if (valid) {
 			if (this.game.getGameLogic().getCurrentPlayer().getStoneColor() == Board.WHITE_VALUE) this.server.sendToClient("/m valid", 0);
@@ -96,7 +121,7 @@ public class LogicController {
 
 		}
 	}
-	
+
 	public void sendWinLoseUpdate(Player player) {
 		if (player.getStoneColor() == Board.WHITE_VALUE) {
 			this.server.sendToClient("/g win", 0);

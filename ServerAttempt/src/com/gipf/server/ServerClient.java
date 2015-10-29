@@ -8,7 +8,7 @@ import java.net.Socket;
 
 public class ServerClient {
 
-	private Server server;
+	private final Server server;
 	private int id;
 	
 	private BufferedReader in;
@@ -17,7 +17,7 @@ public class ServerClient {
 	
 	private Thread receive;
 
-	public ServerClient(Socket socket, Server server, int id) throws IOException {
+	public ServerClient(Socket socket, final Server server, int id) throws IOException {
 		this.server = server;
 		this.id = id;
 		this.socket = socket;
@@ -32,6 +32,8 @@ public class ServerClient {
 						receive(input);
 					}
 				} catch (IOException e) {
+					server.disconnectClient(id);
+					server.getConsole().append("Client " + id + " disconnected!");
 					e.printStackTrace();
 				}
 			}
