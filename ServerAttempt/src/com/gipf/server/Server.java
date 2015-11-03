@@ -15,14 +15,19 @@ public class Server {
 	private int port;
 
 	private LogicController controller;
+	private String logic;
 
 	public Server(int port) {
+		this.port = port;
+	}
+	
+	private void init() {
 		this.console = new ServerConsole(this);
 		this.console.setVisible(true);
 		this.clients = new ArrayList<ServerClient>();
-		this.port = port;
-
-		this.controller = new LogicController(this);
+		this.console.append("Welcome to console v1.0");
+		this.console.append("Please select game mode using commands:");
+		this.console.append("/mode basic   /mode standard");
 	}
 
 	public void start() {
@@ -34,7 +39,7 @@ public class Server {
 			this.connectClients();
 			this.console.append("All clients connected!");
 
-			this.controller = new LogicController(this);
+			this.controller = new LogicController(this, logic);
 			this.controller.sendClientInit();
 		} catch (IOException e) {
 			this.console.append("Server start has failed");
@@ -87,21 +92,27 @@ public class Server {
 	public void consoleInput(String string) {
 		if (string.equals("quit")) {
 			quit();
+		} else if (string.equals("start")) {
+			if (!logic.equals("")) start();
+		} else if (string.equals("/mode basic")) {
+			this.logic = "basic";
+			this.console.append("Basic game mode selected.");
+		} else if (string.equals("/mode standard")) {
+			this.logic = "standard";
+			this.console.append("Standard game mode selected.");
 		} else {
-			sendToAll(string);
+			this.console.append("Invalid console input!");
 		}
 	}
-	
+
 	public ServerConsole getConsole() {
 		return this.console;
 	}
 
 	public static void main(String[] args) {
-		int port = 3620;
+		int port = 2603;
 
 		Server server = new Server(port);
-		server.start();
-		//		PlayerEvent e = new PlayerEvent(new Point(0,0), new Point(1,1), new Player(Board.BLACK_VALUE));
-		//		server.clientInput(e.toString(), 2);
+		server.init();
 	}
 }

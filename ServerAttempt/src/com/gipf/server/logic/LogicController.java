@@ -4,6 +4,7 @@ import com.gipf.server.Server;
 import com.gipf.server.logic.board.Board;
 import com.gipf.server.logic.gamelogic.BasicGameLogic;
 import com.gipf.server.logic.gamelogic.GameLogic;
+import com.gipf.server.logic.gamelogic.StandardGameLogic;
 import com.gipf.server.logic.player.Player;
 import com.gipf.server.logic.player.PlayerEvent;
 import com.gipf.server.logic.utils.Point;
@@ -15,14 +16,16 @@ public class LogicController {
 	private GameLogic logic;
 	private Game game;
 
-	public LogicController(Server server) {
+	public LogicController(Server server, String logic) {
 		this.server = server;
 		this.game = new Game();
 		this.game.setPlayerOne(new Player(Board.WHITE_VALUE));
 		this.game.setPlayerTwo(new Player(Board.BLACK_VALUE));
 		this.game.getBoard().basicInit();
-		this.logic = new BasicGameLogic(this.game, this);
+		if (logic.equals("basic")) this.logic = new BasicGameLogic(this.game, this);
+		else this.logic = new StandardGameLogic(this.game, this);
 		this.logic.setCurrentPlayer(this.game.getPlayerOne());
+		this.game.setGameLogic(this.logic);
 	}
 
 	public void clientInput(String received, int id) {
@@ -86,6 +89,7 @@ public class LogicController {
 		this.server.sendToClient(send, 1);
 	}
 
+	// TODO add extension stones to sending here, test them also for gipf pieces
 	public void rowRemoveRequestEventPerformed(RowRemovalRequestEvent e) {
 		String send = "/s remove";
 		for (int i = 0; i < e.getRows().size(); i++)
@@ -112,13 +116,13 @@ public class LogicController {
 	}
 
 	public void sendMoveValidity(boolean valid) {
+		System.out.println(this.game);
 		if (valid) {
 			if (this.game.getGameLogic().getCurrentPlayer().getStoneColor() == Board.WHITE_VALUE) this.server.sendToClient("/m valid", 0);
 			else this.server.sendToClient("/m valid", 1);
 		} else {
 			if (this.game.getGameLogic().getCurrentPlayer().getStoneColor() == Board.WHITE_VALUE) this.server.sendToClient("/m invalid", 0);
 			else this.server.sendToClient("/m invalid", 1);
-
 		}
 	}
 
