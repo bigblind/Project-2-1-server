@@ -34,7 +34,6 @@ public class Server {
 		try {
 			this.console.append("Server is starting.");
 			this.socket = new ServerSocket(this.port);
-			this.console.append("Console initialised.");
 			this.console.append("Waiting for clients to connect.");
 			this.connectClients();
 			this.console.append("All clients connected!");
@@ -90,9 +89,9 @@ public class Server {
 	}
 
 	public void consoleInput(String string) {
-		if (string.equals("quit")) {
-			quit();
-		} else if (string.equals("start")) {
+		if (string.equals("/quit")) {
+			this.quit();
+		} else if (string.equals("/start")) {
 			if (!logic.equals("")) start();
 		} else if (string.equals("/mode basic")) {
 			this.logic = "basic";
