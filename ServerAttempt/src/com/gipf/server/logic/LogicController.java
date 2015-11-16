@@ -11,6 +11,8 @@ import com.gipf.server.logic.utils.Point;
 
 public class LogicController {
 
+	private Game prevState;
+
 	private Server server;
 
 	private GameLogic logic;
@@ -26,9 +28,11 @@ public class LogicController {
 		else this.logic = new StandardGameLogic(this.game, this);
 		this.logic.setCurrentPlayer(this.game.getPlayerOne());
 		this.game.setGameLogic(this.logic);
+		this.prevState = this.game;
 	}
 
 	public void clientInput(String received, int id) {
+		this.prevState = this.game.copy();
 		if (received.contains("PlayerEvent")) {
 			int x1 = Integer.parseInt("" + received.split("x = ")[1].charAt(0));
 			int y1 = Integer.parseInt("" + received.split("y = ")[1].charAt(0));
@@ -92,9 +96,10 @@ public class LogicController {
 	// TODO add extension stones to sending here, test them also for gipf pieces
 	public void rowRemoveRequestEventPerformed(RowRemovalRequestEvent e) {
 		String send = "/s remove";
-		for (int i = 0; i < e.getRows().size(); i++)
-			send += " {" + e.getRows().get(i).getFromPoint() + " , " + e.getRows().get(i).getToPoint() + "}";
-
+		for (int i = 0; i < e.getRows().size(); i++) {
+//			send += " {" + e.getRows().get(i).getFromPoint() + " , " + e.getRows().get(i).getToPoint() + "}";
+			send += " " + e.getRows().get(i).toString() + "endRow ";
+		}
 		if (e.getRows().get(0).getPlayer().getStoneColor() == Board.WHITE_VALUE) {
 			this.server.sendToClient(send, 0);
 			this.server.sendToClient("/s wait", 1);
@@ -116,7 +121,6 @@ public class LogicController {
 	}
 
 	public void sendMoveValidity(boolean valid) {
-		System.out.println(this.game);
 		if (valid) {
 			if (this.game.getGameLogic().getCurrentPlayer().getStoneColor() == Board.WHITE_VALUE) this.server.sendToClient("/m valid", 0);
 			else this.server.sendToClient("/m valid", 1);
@@ -134,5 +138,12 @@ public class LogicController {
 			this.server.sendToClient("/g win", 1);
 			this.server.sendToClient("/g lose", 0);
 		}
+	}
+
+	public void undo() {
+		this.game = this.prevState.copy();
+		this.logic.setGame(this.game);
+		this.changeEventPerformed(new PlayerChangeEvent(this.logic.getCurrentPlayer(), this.logic.getDisabledPlayer()));
+		this.logic.setCurrentPlayer(this.logic.getDisabledPlayer());
 	}
 }

@@ -139,8 +139,8 @@ public abstract class GameLogic {
 
 	// TODO maybe this should work with the player of the row since when we are in removing state the player might be diffrent from the active one
 	protected void handleExtensions(Row row) {
-		if (currentPlayer.getStoneColor() == Board.WHITE_VALUE) currentPlayer.setStoneAccount(currentPlayer.getStoneAccount() + row.getWhiteExtensionStones());
-		else currentPlayer.setStoneAccount(currentPlayer.getStoneAccount() + row.getBlackExtensionStones());
+		if (currentPlayer.getStoneColor() == Board.WHITE_VALUE) currentPlayer.setStoneAccount(currentPlayer.getStoneAccount() + row.getWhiteExtensionStones().length);
+		else currentPlayer.setStoneAccount(currentPlayer.getStoneAccount() + row.getBlackExtensionStones().length);
 	}
 
 	public Player checkPlayer(int stoneColor) {
@@ -164,5 +164,14 @@ public abstract class GameLogic {
 
 	public Player getCurrentPlayer() {
 		return currentPlayer;
+	}
+	
+	public Player getDisabledPlayer() {
+		if (this.currentPlayer == this.game.getPlayerOne()) return this.game.getPlayerTwo();
+		else return this.game.getPlayerOne();
+	}
+	
+	public void setGame(Game game) {
+		this.game = game;
 	}
 }

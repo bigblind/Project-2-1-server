@@ -43,6 +43,10 @@ public class Player {
 	public int getStoneColor() {
 		return this.stoneColor;
 	}
+	
+	public Player copy() {
+		return new Player(this.name, this.stoneAccount, this.stoneColor);
+	}
 
 	public String toString() {
 		return this.name;

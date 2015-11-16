@@ -6,11 +6,11 @@ import com.gipf.server.logic.utils.Point;
 
 public class Row extends PlayerEvent {
 	
-	private int whiteExtensionStones;
-	private int blackExtensionStones;
+	private Point[] whiteExtensionStones;
+	private Point[] blackExtensionStones;
 	private int length;
 
-	public Row(Point from, Point to, Player player, int length, int whiteExtensionStones, int blackExtensionStones) {
+	public Row(Point from, Point to, Player player, int length, Point[] whiteExtensionStones, Point[] blackExtensionStones) {
 		super(from, to, player);
 		this.whiteExtensionStones = whiteExtensionStones;
 		this.blackExtensionStones = blackExtensionStones;
@@ -21,15 +21,24 @@ public class Row extends PlayerEvent {
 		return length;
 	}
 
-	public int getWhiteExtensionStones() {
+	public Point[] getWhiteExtensionStones() {
 		return whiteExtensionStones;
 	}
 
-	public int getBlackExtensionStones() {
+	public Point[] getBlackExtensionStones() {
 		return blackExtensionStones;
 	}
 
 	public String toString() {
-		return "[Row from: " + this.from + " to: " + this.to + " player: " + this.player + " length: " + this.length + " whiteExtensions: " + this.whiteExtensionStones + " blackExtensions " + this.blackExtensionStones + "]";
+		String result = "[Row from: " + this.from + " to: " + this.to + " player: " + this.player + " length: " + this.length + " whiteExtensions: {";
+			for (Point p : this.whiteExtensionStones) {
+				result += " " + p;
+			}
+			result += "} blackExtensions: {";
+			for (Point p : this.blackExtensionStones) {
+				result += " " + p;
+			}
+			result += "}]";
+		return result;
 	}
 }

@@ -133,7 +133,6 @@ public class Board {
 	}
 
 	public boolean isValidMove(Point from, Point to) {
-		this.print();
 		if (grid[to.getX()][to.getY()] == BOARD_EDGE) return false;
 
 		int x1 = from.getX();
@@ -192,7 +191,7 @@ public class Board {
 	public int[][] getGrid() {
 		return this.grid;
 	}
-	
+
 	public void setGrid(int[][] grid) {
 		this.grid = grid;
 	}
@@ -218,12 +217,8 @@ public class Board {
 						lineStartY = j - counter;
 						lineEndY = j - 1;
 
-						int[] extensionStones = getExtensionStones(new Point(lineStartX, lineStartY), new Point(lineEndX, lineEndY));
+						Point[][] extensionStones = getExtensionStones(new Point(lineStartX, lineStartY), new Point(lineEndX, lineEndY));
 						lines.add(new Row(new Point(lineStartX, lineStartY), new Point(lineEndX, lineEndY), logic.checkPlayer(prevValue), counter, extensionStones[0], extensionStones[1]));
-
-						System.out.println("found a vertical line with x = " + lineStartX + " lineStartY = " + lineStartY + " lineEndY = " + lineEndY);
-						System.out.println("white extensions = " + extensionStones[0] + " black extensions = " + extensionStones[1]);
-						System.out.println("length: " + counter + " " + i + " " + j);
 					}
 
 					prevValue = this.grid[i][j];
@@ -249,12 +244,8 @@ public class Board {
 						lineStartY = j;
 						lineEndY = j;
 
-						int[] extensionStones = getExtensionStones(new Point(lineStartX, lineStartY), new Point(lineEndX, lineEndY));
+						Point[][] extensionStones = getExtensionStones(new Point(lineStartX, lineStartY), new Point(lineEndX, lineEndY));
 						lines.add(new Row(new Point(lineStartX, lineStartY), new Point(lineEndX, lineEndY), logic.checkPlayer(prevValue), counter, extensionStones[0], extensionStones[1]));
-
-						System.out.println("found a horizontal line with lineStartX = " + lineStartX + " lineEndX = " + lineEndX + " y = " + lineStartY);
-						System.out.println("white extensions = " + extensionStones[0] + " black extensions = " + extensionStones[1]);
-						System.out.println("lenght: " + counter + " " + i + " " + j);
 					}
 
 					prevValue = this.grid[i][j];
@@ -280,12 +271,8 @@ public class Board {
 						lineStartY = 4 - k + l - counter;
 						lineEndY = 4 - k + l - 1;
 
-						int[] extensionStones = getExtensionStones(new Point(lineStartX, lineStartY), new Point(lineEndX, lineEndY));
+						Point[][] extensionStones = getExtensionStones(new Point(lineStartX, lineStartY), new Point(lineEndX, lineEndY));
 						lines.add(new Row(new Point(lineStartX, lineStartY), new Point(lineEndX, lineEndY), logic.checkPlayer(prevValue), counter, extensionStones[0], extensionStones[1]));
-
-						System.out.println("found a (lt - rb) line with lineStartX = " + lineStartX + " lineEndX = " + lineEndX + " lineStartY = " + lineStartY + " lineEndY = " + lineEndY);
-						System.out.println("white extensions = " + extensionStones[0] + " black extensions = " + extensionStones[1]);
-						System.out.println("lenght: " + counter + " " + (1 + l) + " " + (4 - k + l));
 					}
 
 					prevValue = this.grid[l + 1][4 - k + l];
@@ -311,12 +298,8 @@ public class Board {
 						lineStartY = 1 + l - counter;
 						lineEndY = l;
 
-						int[] extensionStones = getExtensionStones(new Point(lineStartX, lineStartY), new Point(lineEndX, lineEndY));
+						Point[][] extensionStones = getExtensionStones(new Point(lineStartX, lineStartY), new Point(lineEndX, lineEndY));
 						lines.add(new Row(new Point(lineStartX, lineStartY), new Point(lineEndX, lineEndY), logic.checkPlayer(prevValue), counter, extensionStones[0], extensionStones[1]));
-
-						System.out.println("found a (lt - rb) line with lineStartX = " + lineStartX + " lineEndX = " + lineEndX + " lineStartY = " + lineStartY + " lineEndY = " + lineEndY);
-						System.out.println("white extensions = " + extensionStones[0] + " black extensions = " + extensionStones[1]);
-						System.out.println("lenght: " + counter + " " + (1 + l) + " " + (4 - k + l));
 					}
 
 					prevValue = this.grid[2 + k + l][1 + l];
@@ -330,12 +313,10 @@ public class Board {
 		return lines;
 	}
 
-	private int[] getExtensionStones(Point start, Point end) {
-		int white = 0;
-		int black = 0;
+	private Point[][] getExtensionStones(Point start, Point end) {
 		int deltaX = end.getX() - start.getX();
 		int deltaY = end.getY() - start.getY();
-		// normalize these deltas to 1 if it goes up, -1 if it goes down, 0 if
+		// normalise these deltas to 1 if it goes up, -1 if it goes down, 0 if
 		// it remains the same.
 		if (deltaX > 0) deltaX = 1;
 		else if (deltaX < 0) deltaX = -1;
@@ -350,24 +331,27 @@ public class Board {
 		int xx = start.getX() - connectedStart.getX();
 		int yy = start.getY() - connectedStart.getY();
 
+		ArrayList<Point> blackExtensions = new ArrayList<Point>();
+		ArrayList<Point> whiteExtensions = new ArrayList<Point>();
+
 		if (xx > 0) {
 			if (yy > 0) {
 				for (int i = connectedStart.getX(); i < start.getX(); i++) {
 					for (int j = connectedStart.getY(); j < start.getY(); j++) {
-						if (this.grid[i][j] == Board.WHITE_VALUE || this.grid[i][j] == Board.GIPF_WHITE_VALUE) white++;
-						else black++;
+						if (this.grid[i][j] == Board.WHITE_VALUE || this.grid[i][j] == Board.GIPF_WHITE_VALUE) whiteExtensions.add(new Point(i, j));
+						else blackExtensions.add(new Point(i, j));
 					}
 				}
 			} else {
 				for (int i = connectedStart.getX(); i < start.getX(); i++) {
-					if (this.grid[i][start.getY()] == Board.WHITE_VALUE || this.grid[i][start.getY()] == Board.GIPF_WHITE_VALUE) white++;
-					else black++;
+					if (this.grid[i][start.getY()] == Board.WHITE_VALUE || this.grid[i][start.getY()] == Board.GIPF_WHITE_VALUE) whiteExtensions.add(new Point(i, start.getY()));
+					else blackExtensions.add(new Point(i, start.getY()));
 				}
 			}
 		} else {
 			for (int j = connectedStart.getY(); j < start.getY(); j++) {
-				if (this.grid[start.getX()][j] == Board.WHITE_VALUE || this.grid[start.getX()][j] == Board.GIPF_WHITE_VALUE) white++;
-				else black++;
+				if (this.grid[start.getX()][j] == Board.WHITE_VALUE || this.grid[start.getX()][j] == Board.GIPF_WHITE_VALUE) whiteExtensions.add(new Point(start.getX(), j));
+				else blackExtensions.add(new Point(start.getX(), j));
 			}
 		}
 
@@ -375,23 +359,31 @@ public class Board {
 			if (yy > 0) {
 				for (int i = end.getX(); i <= connectedEnd.getX(); i++) {
 					for (int j = end.getY(); j < connectedEnd.getY(); j++) {
-						if (this.grid[i][j] == Board.WHITE_VALUE || this.grid[i][j] == Board.GIPF_WHITE_VALUE) white++;
-						else black++;
+						if (this.grid[i][j] == Board.WHITE_VALUE || this.grid[i][j] == Board.GIPF_WHITE_VALUE) whiteExtensions.add(new Point(i, j));
+						else blackExtensions.add(new Point(i, j));
 					}
 				}
 			} else {
 				for (int i = end.getX(); i < connectedEnd.getX(); i++) {
-					if (this.grid[i][start.getY()] == Board.WHITE_VALUE || this.grid[i][start.getY()] == Board.GIPF_WHITE_VALUE) white++;
-					else black++;
+					if (this.grid[i][start.getY()] == Board.WHITE_VALUE || this.grid[i][start.getY()] == Board.GIPF_WHITE_VALUE) whiteExtensions.add(new Point(i, start.getY()));
+					else blackExtensions.add(new Point(i, start.getY()));
 				}
 			}
 		} else {
 			for (int j = end.getY(); j < connectedEnd.getY(); j++) {
-				if (this.grid[start.getX()][j] == Board.WHITE_VALUE || this.grid[start.getX()][j] == Board.GIPF_WHITE_VALUE) white++;
-				else black++;
+				if (this.grid[start.getX()][j] == Board.WHITE_VALUE || this.grid[start.getX()][j] == Board.GIPF_WHITE_VALUE) whiteExtensions.add(new Point(start.getX(), j));
+				else blackExtensions.add(new Point(start.getX(), j));
 			}
 		}
-		return new int[] { white, black };
+		Point[] whiteExt = new Point[whiteExtensions.size()];
+		Point[] blackExt = new Point[blackExtensions.size()];
+		for (int i = 0; i < whiteExtensions.size(); i++) {
+			whiteExt[i] = whiteExtensions.get(i);
+		}
+		for (int i = 0; i < blackExtensions.size(); i++) {
+			blackExt[i] = blackExtensions.get(i);
+		}
+		return new Point[][] {whiteExt, blackExt};
 	}
 
 	public void removeRowAndExtensions(Row row) {

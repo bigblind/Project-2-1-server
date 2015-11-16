@@ -15,6 +15,12 @@ public class Game {
 		this.board.basicInit();
 	}
 	
+	public Game(Board board, Player playerOne, Player playerTwo) {
+		this.board = board;
+		this.playerOne = playerOne;
+		this.playerTwo = playerTwo;
+	}
+	
 	public void setPlayerOne(Player player) {
 		this.playerOne = player;
 	}
@@ -42,5 +48,11 @@ public class Game {
 
 	public Board getBoard() {
 		return this.board;
+	}
+	
+	public Game copy() {
+		Game game = new Game(this.board.copy(), this.playerOne.copy(), this.playerTwo.copy());
+		game.setGameLogic(this.logic);
+		return game;
 	}
 }

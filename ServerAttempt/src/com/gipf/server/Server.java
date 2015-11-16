@@ -99,6 +99,9 @@ public class Server {
 		} else if (string.equals("/mode standard")) {
 			this.logic = "standard";
 			this.console.append("Standard game mode selected.");
+		} else if (string.equals("/undo")) {
+			this.controller.undo();
+			this.console.append("Undid last move.");
 		} else {
 			this.console.append("Invalid console input!");
 		}
