@@ -93,7 +93,6 @@ public class LogicController {
 		this.server.sendToClient(send, 1);
 	}
 
-	// TODO add extension stones to sending here, test them also for gipf pieces
 	public void rowRemoveRequestEventPerformed(RowRemovalRequestEvent e) {
 		String send = "/s remove";
 		for (int i = 0; i < e.getRows().size(); i++) {
