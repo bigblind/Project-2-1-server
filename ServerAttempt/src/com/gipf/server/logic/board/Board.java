@@ -328,6 +328,8 @@ public class Board {
 		Point connectedStart = findConnectionEnd(start, -deltaX, -deltaY);
 		Point connectedEnd = findConnectionEnd(end, deltaX, deltaY);
 
+		System.out.println(connectedStart + " " + connectedEnd);
+		
 		int xx = start.getX() - connectedStart.getX();
 		int yy = start.getY() - connectedStart.getY();
 
@@ -337,42 +339,60 @@ public class Board {
 		if (xx > 0) {
 			if (yy > 0) {
 				for (int i = connectedStart.getX(); i < start.getX(); i++) {
-					for (int j = connectedStart.getY(); j < start.getY(); j++) {
-						if (this.grid[i][j] == Board.WHITE_VALUE || this.grid[i][j] == Board.GIPF_WHITE_VALUE) whiteExtensions.add(new Point(i, j));
-						else blackExtensions.add(new Point(i, j));
+					if (this.grid[i][connectedStart.getY() + (i-connectedStart.getX())] == Board.WHITE_VALUE || this.grid[i][connectedStart.getY() + (i-connectedStart.getX())] == Board.GIPF_WHITE_VALUE) whiteExtensions.add(new Point(i, connectedStart.getY() + (i-connectedStart.getX())));
+					else {
+						System.out.println(new Point(i, connectedStart.getY() + (i-connectedStart.getX())));
+						blackExtensions.add(new Point(i, connectedStart.getY() + (i-connectedStart.getX())));
 					}
 				}
+				
 			} else {
 				for (int i = connectedStart.getX(); i < start.getX(); i++) {
 					if (this.grid[i][start.getY()] == Board.WHITE_VALUE || this.grid[i][start.getY()] == Board.GIPF_WHITE_VALUE) whiteExtensions.add(new Point(i, start.getY()));
-					else blackExtensions.add(new Point(i, start.getY()));
+					else {
+						System.out.println(new Point(i, start.getY()));
+						blackExtensions.add(new Point(i, start.getY()));
+					}
 				}
 			}
 		} else {
 			for (int j = connectedStart.getY(); j < start.getY(); j++) {
 				if (this.grid[start.getX()][j] == Board.WHITE_VALUE || this.grid[start.getX()][j] == Board.GIPF_WHITE_VALUE) whiteExtensions.add(new Point(start.getX(), j));
-				else blackExtensions.add(new Point(start.getX(), j));
+				else {
+					System.out.println(new Point(start.getX(), j));
+					blackExtensions.add(new Point(start.getX(), j));
+				}
 			}
 		}
 
+		xx = connectedEnd.getX() - end.getX();
+		yy = connectedEnd.getY() - end.getY();
+		
 		if (xx > 0) {
 			if (yy > 0) {
 				for (int i = end.getX(); i <= connectedEnd.getX(); i++) {
-					for (int j = end.getY(); j < connectedEnd.getY(); j++) {
-						if (this.grid[i][j] == Board.WHITE_VALUE || this.grid[i][j] == Board.GIPF_WHITE_VALUE) whiteExtensions.add(new Point(i, j));
-						else blackExtensions.add(new Point(i, j));
+					if (this.grid[i][end.getY() + (i-end.getX())] == Board.WHITE_VALUE || this.grid[i][end.getY() + (i-end.getX())] == Board.GIPF_WHITE_VALUE) whiteExtensions.add(new Point(i, end.getY() + (i-end.getX())));
+					else {
+						System.out.println(new Point(i, end.getY() + (i-end.getX())));
+						blackExtensions.add(new Point(i, end.getY() + (i-end.getX())));
 					}
 				}
 			} else {
 				for (int i = end.getX(); i < connectedEnd.getX(); i++) {
 					if (this.grid[i][start.getY()] == Board.WHITE_VALUE || this.grid[i][start.getY()] == Board.GIPF_WHITE_VALUE) whiteExtensions.add(new Point(i, start.getY()));
-					else blackExtensions.add(new Point(i, start.getY()));
+					else {
+						System.out.println(new Point(i, start.getY()));
+						blackExtensions.add(new Point(i, start.getY()));
+					}
 				}
 			}
 		} else {
 			for (int j = end.getY(); j < connectedEnd.getY(); j++) {
 				if (this.grid[start.getX()][j] == Board.WHITE_VALUE || this.grid[start.getX()][j] == Board.GIPF_WHITE_VALUE) whiteExtensions.add(new Point(start.getX(), j));
-				else blackExtensions.add(new Point(start.getX(), j));
+				else {
+					System.out.println(new Point(start.getX(), j));
+					blackExtensions.add(new Point(start.getX(), j));
+				}
 			}
 		}
 		Point[] whiteExt = new Point[whiteExtensions.size()];

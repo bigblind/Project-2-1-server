@@ -23,9 +23,13 @@ public class LogicController {
 		this.game = new Game();
 		this.game.setPlayerOne(new Player(Board.WHITE_VALUE));
 		this.game.setPlayerTwo(new Player(Board.BLACK_VALUE));
-		this.game.getBoard().basicInit();
-		if (logic.equals("basic")) this.logic = new BasicGameLogic(this.game, this);
-		else this.logic = new StandardGameLogic(this.game, this);
+		if (logic.equals("basic")) {
+			this.logic = new BasicGameLogic(this.game, this);
+			this.game.getBoard().basicInit();
+		} else {
+			this.logic = new StandardGameLogic(this.game, this);
+			this.game.getBoard().standardInit();
+		}
 		this.logic.setCurrentPlayer(this.game.getPlayerOne());
 		this.game.setGameLogic(this.logic);
 		this.prevState = this.game;
@@ -96,7 +100,7 @@ public class LogicController {
 	public void rowRemoveRequestEventPerformed(RowRemovalRequestEvent e) {
 		String send = "/s remove";
 		for (int i = 0; i < e.getRows().size(); i++) {
-//			send += " {" + e.getRows().get(i).getFromPoint() + " , " + e.getRows().get(i).getToPoint() + "}";
+			//			send += " {" + e.getRows().get(i).getFromPoint() + " , " + e.getRows().get(i).getToPoint() + "}";
 			send += " " + e.getRows().get(i).toString() + "endRow ";
 		}
 		if (e.getRows().get(0).getPlayer().getStoneColor() == Board.WHITE_VALUE) {
