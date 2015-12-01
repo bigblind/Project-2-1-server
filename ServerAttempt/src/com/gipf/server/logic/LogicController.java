@@ -2,9 +2,7 @@ package com.gipf.server.logic;
 
 import com.gipf.server.Server;
 import com.gipf.server.logic.board.Board;
-import com.gipf.server.logic.gamelogic.BasicGameLogic;
 import com.gipf.server.logic.gamelogic.GameLogic;
-import com.gipf.server.logic.gamelogic.StandardGameLogic;
 import com.gipf.server.logic.player.Player;
 import com.gipf.server.logic.player.PlayerEvent;
 import com.gipf.server.logic.utils.Point;
@@ -24,10 +22,10 @@ public class LogicController {
 		this.game.setPlayerOne(new Player(Board.WHITE_VALUE));
 		this.game.setPlayerTwo(new Player(Board.BLACK_VALUE));
 		if (logic.equals("basic")) {
-			this.logic = new BasicGameLogic(this.game, this);
+			this.logic = new GameLogic(this.game, this, false);
 			this.game.getBoard().basicInit();
 		} else {
-			this.logic = new StandardGameLogic(this.game, this);
+			this.logic = new GameLogic(this.game, this, true);
 			this.game.getBoard().standardInit();
 		}
 		this.logic.setCurrentPlayer(this.game.getPlayerOne());
